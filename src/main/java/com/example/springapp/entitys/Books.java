@@ -9,7 +9,7 @@ import javax.persistence.Id;
 public class Books {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private int id;
 
     private String author;
     private String title;
@@ -30,7 +30,7 @@ public class Books {
         return title;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
