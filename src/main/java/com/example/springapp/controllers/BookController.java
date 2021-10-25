@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/base")
-public class Controller {
+public class BookController {
 
     @Autowired
     public Repository repository;
