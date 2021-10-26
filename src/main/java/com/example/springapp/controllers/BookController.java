@@ -50,18 +50,6 @@ public class BookController {
     }
 
 
-//    @PostMapping("/add")
-//    public String addNewBook(){
-//
-//        Books b = new Books();
-//
-//        //b.setAuthor(author)
-//        //b.setTitle(title)
-//
-//        repository.save(b);
-//        return "Saved";
-//    }
-
 
     @RequestMapping(value = { "/addBook" }, method = RequestMethod.GET)
     public String showAddPersonPage(Model model) {

@@ -9,14 +9,17 @@
 <body>
 <h1>Person List</h1>
 <a href="addBook">Add Book</a>
+
 <br/><br/>
 <div>
     <table border="1">
         <tr>
+            <th>ID</th>
             <th>Author</th>
             <th>Title</th>
         </tr>
         <tr th:each ="books : ${books}">
+            <td th:utext="${books.id}">...</td>
             <td th:utext="${books.author}">...</td>
             <td th:utext="${books.title}">...</td>
         </tr>
