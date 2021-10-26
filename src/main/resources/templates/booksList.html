@@ -7,8 +7,11 @@
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}"/>
 </head>
 <body>
-<h1>Person List</h1>
-<a href="addBook">Add Book</a>
+<h1>Books List</h1>
+<a href="http://localhost:8080/base/booksList?task=id">Sort by ID</a><br><br>
+<a href="http://localhost:8080/base/booksList?task=author">Sort by Author</a><br><br>
+<a href="http://localhost:8080/base/booksList?task=title">Sort by Title</a>
+
 
 <br/><br/>
 <div>
@@ -25,5 +28,7 @@
         </tr>
     </table>
 </div>
+<br>
+<a href="addBook">Add Book</a>
 </body>
 </html>

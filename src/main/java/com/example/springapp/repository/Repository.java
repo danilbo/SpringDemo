@@ -1,8 +1,14 @@
 package com.example.springapp.repository;
 
 import com.example.springapp.entitys.Books;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface Repository extends CrudRepository<Books, Long> {
+import java.util.ArrayList;
+import java.util.List;
+
+public interface Repository extends JpaRepository<Books, Long> {
+
+    ArrayList<Books> findByOrderByAuthorAsc();
+    ArrayList<Books> findByOrderByTitleAsc();
 
 }

@@ -25,7 +25,8 @@ public class BookController {
     @Value("${error.message}")
     private String errorMessage;
 
-    private static List<Books> books = new ArrayList<Books>();
+    private final static String author = "author";
+    private final static String title = "title";
 
 
     @GetMapping("/hello")
@@ -33,25 +34,55 @@ public class BookController {
         return String.format("Hello, %s!", name);
     }
 
-//    @GetMapping("/getdb")
-//    public Iterable<Books> getDB() {
-//        return repository.findAll();
-//    }
-//
 
-    @RequestMapping(value = { "/booksList" }, method = RequestMethod.GET)
-    public String personList(Model model) {
+    @RequestMapping(value = {"/booksList"}, method = RequestMethod.GET)
+    public String personList(@RequestParam(value = "task", defaultValue = ("id")) String task, Model model) {
+
 
         List<Books> booksArray = new ArrayList<>();
-        repository.findAll().forEach(booksArray::add);
-        model.addAttribute("books", booksArray);
 
+
+        if (task.equals(author)) {
+            booksArray = repository.findByOrderByAuthorAsc();
+        }
+        if (task.equals(title)) {
+            booksArray = repository.findByOrderByTitleAsc();
+        }
+        if (task.equals("id")) {
+            booksArray = repository.findAll();
+        }
+
+        model.addAttribute("books", booksArray);
         return "booksList";
     }
 
 
 
-    @RequestMapping(value = { "/addBook" }, method = RequestMethod.GET)
+
+//    @RequestMapping(value = {"/sort"}, method = RequestMethod.GET)
+//    public String sortedByAuthor(Model model) {
+//
+//        List<Books> booksList = repository.findByOrderByAuthorAsc();
+//        model.addAttribute("books", booksList);
+//
+//        return "sortAuthor";
+//
+//    }
+//
+//    @RequestMapping(value = {"/sort"}, method = RequestMethod.GET)
+//    public String sortedByTitle(Model model) {
+//
+//        List<Books> booksList = repository.findByOrderByTitleAsc();
+//        model.addAttribute("books", booksList);
+//
+//        return "sortAuthor";
+//
+//    }
+
+
+
+
+    @RequestMapping(value = {"/addBook"}, method = RequestMethod.GET)
     public String showAddPersonPage(Model model) {
 
         BookForm bookForm = new BookForm();
@@ -61,7 +92,7 @@ public class BookController {
     }
 
 
-    @RequestMapping(value = { "/addBook" }, method = RequestMethod.POST)
+    @RequestMapping(value = {"/addBook"}, method = RequestMethod.POST)
     public String savePerson(Model model, //
                              @ModelAttribute("bookForm") BookForm bookForm) {
 
