@@ -28,7 +28,7 @@
         </tr>
     </table>
 
-    <div th:if="${totalPages > 0}" class="pagination"
+    <div th:if="${booksPage.totalPages > 0}" class="pagination"
          th:each="pageNumber : ${pageNumbers}">
         <a th:href="@{/base/booksListPg(size=${booksPage.size}, page=${pageNumber})}"
            th:text=${pageNumber}

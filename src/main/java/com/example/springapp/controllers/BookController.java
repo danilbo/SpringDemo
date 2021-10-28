@@ -9,6 +9,7 @@ import com.example.springapp.thymeleaf.PersonForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -68,13 +70,23 @@ public class BookController {
     public String pageablePersonList(
             @RequestParam(value = "task", defaultValue = ("id")) String task,
             Model model,
-            @PageableDefault(sort = {"id"},direction = Sort.Direction.DESC)Pageable pageable) {
+            @PageableDefault(sort = {"id"},direction = Sort.Direction.DESC)Pageable pageable,
+            @RequestParam("page") Optional<Integer> page,
+            @RequestParam("size") Optional<Integer> size) {
 
+        int currentPage = page.orElse(1);
+        int pageSize = size.orElse(5);
+        int totalPages;
 
+        Page<Books> booksPage = bookService.findPaginated(PageRequest.of(currentPage - 1, pageSize));
+        model.addAttribute("bookPage", booksPage);
 
-        Page<Books> booksPage = null;
+        totalPages = booksPage.getTotalPages();
 
-
+        if (totalPages > 0) {
+            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages).boxed().collect(Collectors.toList()); //creating page list with stream
+            model.addAttribute("pageNumbers", pageNumbers);
+        }
 
         if (task.equals("author")) {
             booksPage = bookService.sortedByAuthorPage(pageable);
@@ -84,12 +96,6 @@ public class BookController {
         }
         if (task.equals("id")) {
             booksPage = bookService.sortedByIDPage(pageable);
-        }
-
-        int totalPages = booksPage.getTotalPages();
-        if (totalPages > 0) {
-            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages).boxed().collect(Collectors.toList()); //creating page list with stream
-            model.addAttribute("pageNumbers", pageNumbers);
         }
 
         model.addAttribute("books", booksPage); //bookPage
