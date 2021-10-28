@@ -1,6 +1,5 @@
 package com.example.springapp.controllers;
 
-import com.example.springapp.BookService;
 import com.example.springapp.entitys.BookForm;
 import com.example.springapp.entitys.Books;
 import com.example.springapp.repository.Repository;
@@ -8,29 +7,20 @@ import com.example.springapp.thymeleaf.Person;
 import com.example.springapp.thymeleaf.PersonForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 
 @Controller
 @RequestMapping("/base")
 public class BookController {
 
-
     @Autowired
-    private BookService bookService;
+    public Repository repository;
 
     @Value("${error.message}")
     private String errorMessage;
@@ -53,54 +43,42 @@ public class BookController {
 
 
         if (task.equals(author)) {
-            booksArray = bookService.sortedByAuthor();
+            booksArray = repository.findByOrderByAuthorAsc();
         }
         if (task.equals(title)) {
-            booksArray = bookService.sortedByTitle();
+            booksArray = repository.findByOrderByTitleAsc();
         }
         if (task.equals("id")) {
-            booksArray = bookService.sortedByID();
+            booksArray = repository.findAll();
         }
 
         model.addAttribute("books", booksArray);
         return "booksList";
     }
 
-    @RequestMapping(value = {"/booksListPg"}, method = RequestMethod.GET)
-    public String pageablePersonList(
-            @RequestParam(value = "task", defaultValue = ("id")) String task,
-            Model model,
-            @PageableDefault(sort = {"id"},direction = Sort.Direction.DESC)Pageable pageable,
-            @RequestParam("page") Optional<Integer> page,
-            @RequestParam("size") Optional<Integer> size) {
 
-        int currentPage = page.orElse(1);
-        int pageSize = size.orElse(5);
-        int totalPages;
 
-        Page<Books> booksPage = bookService.findPaginated(PageRequest.of(currentPage - 1, pageSize));
-        model.addAttribute("bookPage", booksPage);
 
-        totalPages = booksPage.getTotalPages();
+//    @RequestMapping(value = {"/sort"}, method = RequestMethod.GET)
+//    public String sortedByAuthor(Model model) {
+//
+//        List<Books> booksList = repository.findByOrderByAuthorAsc();
+//        model.addAttribute("books", booksList);
+//
+//        return "sortAuthor";
+//
+//    }
+//
+//    @RequestMapping(value = {"/sort"}, method = RequestMethod.GET)
+//    public String sortedByTitle(Model model) {
+//
+//        List<Books> booksList = repository.findByOrderByTitleAsc();
+//        model.addAttribute("books", booksList);
+//
+//        return "sortAuthor";
+//
+//    }
 
-        if (totalPages > 0) {
-            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages).boxed().collect(Collectors.toList()); //creating page list with stream
-            model.addAttribute("pageNumbers", pageNumbers);
-        }
-
-        if (task.equals("author")) {
-            booksPage = bookService.sortedByAuthorPage(pageable);
-        }
-        if (task.equals("title")) {
-            booksPage = bookService.sortedByTitlePage(pageable);
-        }
-        if (task.equals("id")) {
-            booksPage = bookService.sortedByIDPage(pageable);
-        }
-
-        model.addAttribute("books", booksPage); //bookPage
-        return "booksListPg";
-    }
 
 
 
@@ -121,9 +99,12 @@ public class BookController {
         String author = bookForm.getAuthor();
         String title = bookForm.getTitle();
 
-        if (author != null && author.length() > 0 &&
-            title != null && title.length() > 0) {
-            return bookService.addBook(author, title);
+        if (author != null && author.length() > 0 //
+                && title != null && title.length() > 0) {
+            Books newBook = new Books(author, title);
+            repository.save(newBook);
+
+            return "redirect:/base/booksList";
         }
 
         model.addAttribute("errorMessage", errorMessage);
