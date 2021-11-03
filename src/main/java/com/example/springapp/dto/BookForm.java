@@ -1,4 +1,4 @@
-package com.example.springapp.entitys;
+package com.example.springapp.dto;
 
 public class BookForm {
 

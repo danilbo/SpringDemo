@@ -1,89 +1,114 @@
 package com.example.springapp.controllers;
 
-import com.example.springapp.entitys.BookForm;
-import com.example.springapp.entitys.Books;
+import com.example.springapp.repository.BooksSpecificationsBuilder;
 import com.example.springapp.repository.Repository;
-import com.example.springapp.thymeleaf.Person;
-import com.example.springapp.thymeleaf.PersonForm;
+import com.example.springapp.services.BookService;
+import com.example.springapp.dto.BookForm;
+import com.example.springapp.entitys.Books;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 @Controller
 @RequestMapping("/base")
 public class BookController {
 
+
     @Autowired
-    public Repository repository;
+    private BookService bookService;
+    @Autowired
+    private Repository repository;
 
     @Value("${error.message}")
     private String errorMessage;
 
-    private final static String author = "author";
-    private final static String title = "title";
 
+    @RequestMapping(method = RequestMethod.GET, value = "/filter")
+    public String search(@RequestParam(value = "author",required = false) String author,Model model,
+                         @RequestParam(value = "title",required = false) String title,
+                         @RequestParam(value = "sort",defaultValue = "id") String sort,
+                         @RequestParam(value = "pageSize",defaultValue = "6") String pageSize,
+                         @PageableDefault(sort = {"id"},direction = Sort.Direction.DESC)Pageable pageable) {
+        int size = Integer.parseInt(pageSize);
+        Map<String,String> conditions = new HashMap<String,String>();
+        if (author!=null && !author.equals("")) conditions.put("author", author);
+        if (title!=null && !title.equals(""))  conditions.put("title" , title);
+        //List<Books> booksArray = bookService.getParamsBooks(conditions);
 
-    @GetMapping("/hello")
-    public String hello(@RequestParam(value = "name", defaultValue = ("whoever you are...")) String name) {
-        return String.format("Hello, %s!", name);
+        Page<Books> page = bookService.getPageBooks(conditions, pageable, sort, size);
+        model.addAttribute("books", page);
+        return "booksList";
     }
 
 
     @RequestMapping(value = {"/booksList"}, method = RequestMethod.GET)
-    public String personList(@RequestParam(value = "task", defaultValue = ("id")) String task, Model model) {
-
+    public String booksList(@RequestParam(value = "task", defaultValue = ("id")) String task, Model model) {
 
         List<Books> booksArray = new ArrayList<>();
 
-
-        if (task.equals(author)) {
-            booksArray = repository.findByOrderByAuthorAsc();
+        if (task.equals("author")) {
+            booksArray = bookService.sortedByAuthor();
         }
-        if (task.equals(title)) {
-            booksArray = repository.findByOrderByTitleAsc();
+        if (task.equals("title")) {
+            booksArray = bookService.sortedByTitle();
         }
         if (task.equals("id")) {
-            booksArray = repository.findAll();
+            booksArray = bookService.sortedByID();
         }
 
         model.addAttribute("books", booksArray);
         return "booksList";
     }
 
+    @RequestMapping(value = {"/booksListPg"}, method = RequestMethod.GET)
+    public String pageableBooksList(
+            @RequestParam(value = "task", defaultValue = ("id")) String task,
+            Model model,
+            @PageableDefault(sort = {"id"},direction = Sort.Direction.DESC)Pageable pageable) {
 
+        Page<Books> booksPage = null;
 
+        if (task.equals("author")) {
+            booksPage = bookService.sortedByAuthorPage(pageable);
+        }
+        if (task.equals("title")) {
+            booksPage = bookService.sortedByTitlePage(pageable);
+        }
+        if (task.equals("id")) {
+            booksPage = bookService.sortedByIDPage(pageable);
+        }
 
-//    @RequestMapping(value = {"/sort"}, method = RequestMethod.GET)
-//    public String sortedByAuthor(Model model) {
-//
-//        List<Books> booksList = repository.findByOrderByAuthorAsc();
-//        model.addAttribute("books", booksList);
-//
-//        return "sortAuthor";
-//
-//    }
-//
-//    @RequestMapping(value = {"/sort"}, method = RequestMethod.GET)
-//    public String sortedByTitle(Model model) {
-//
-//        List<Books> booksList = repository.findByOrderByTitleAsc();
-//        model.addAttribute("books", booksList);
-//
-//        return "sortAuthor";
-//
-//    }
+        int totalPages = booksPage.getTotalPages();
+        if (totalPages > 0) {
+            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages).boxed().collect(Collectors.toList()); //creating page list with stream
+            model.addAttribute("pageNumbers", pageNumbers);
+        }
 
+        model.addAttribute("books", booksPage); //bookPage
+        return "booksListPg";
+    }
 
 
 
     @RequestMapping(value = {"/addBook"}, method = RequestMethod.GET)
-    public String showAddPersonPage(Model model) {
+    public String showAddBookPage(Model model) {
 
         BookForm bookForm = new BookForm();
         model.addAttribute("bookForm", bookForm);
@@ -93,18 +118,14 @@ public class BookController {
 
 
     @RequestMapping(value = {"/addBook"}, method = RequestMethod.POST)
-    public String savePerson(Model model, //
-                             @ModelAttribute("bookForm") BookForm bookForm) {
+    public String saveBook(Model model, @ModelAttribute("bookForm") BookForm bookForm) {
 
         String author = bookForm.getAuthor();
         String title = bookForm.getTitle();
 
-        if (author != null && author.length() > 0 //
-                && title != null && title.length() > 0) {
-            Books newBook = new Books(author, title);
-            repository.save(newBook);
-
-            return "redirect:/base/booksList";
+        if (author != null && author.length() > 0 &&
+            title != null && title.length() > 0) {
+            return bookService.addBook(author, title);
         }
 
         model.addAttribute("errorMessage", errorMessage);
