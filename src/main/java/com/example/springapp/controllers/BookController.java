@@ -38,7 +38,6 @@ public class BookController {
 
     @Value("${error.message}")
     private String errorMessage;
-//j
 
     @RequestMapping(method = RequestMethod.GET, value = "/filter")
     public String search(@RequestParam(value = "author",required = false) String author,Model model,
@@ -58,7 +57,7 @@ public class BookController {
     }
 
 
-    @RequestMapping(value = {"/booksListPg"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/currentBook"}, method = RequestMethod.GET)
     public String currentBook() {
 
 
