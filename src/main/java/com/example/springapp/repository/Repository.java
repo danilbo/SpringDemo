@@ -17,8 +17,6 @@ public interface Repository extends CrudRepository<Books, Long>, JpaRepository<B
     ArrayList<Books> findByOrderByAuthorAsc();
     ArrayList<Books> findByOrderByTitleAsc();
 
-
-
     Page<Books>  findByOrderByIdAsc(Pageable pageable);
     Page<Books> findByOrderByAuthorAsc(Pageable pageable);
     Page<Books> findByOrderByTitleAsc(Pageable pageable);

@@ -33,8 +33,7 @@ public class BookController {
 
     @Autowired
     private BookService bookService;
-    @Autowired
-    private Repository repository;
+
 
     @Value("${error.message}")
     private String errorMessage;
@@ -49,17 +48,15 @@ public class BookController {
         Map<String,String> conditions = new HashMap<String,String>();
         if (author!=null && !author.equals("")) conditions.put("author", author);
         if (title!=null && !title.equals(""))  conditions.put("title" , title);
-        //List<Books> booksArray = bookService.getParamsBooks(conditions);
 
         Page<Books> page = bookService.getPageBooks(conditions, pageable, sort, size);
         model.addAttribute("books", page);
-        return "booksList";
+        return "booksListPg";
     }
 
 
     @RequestMapping(value = {"/currentBook"}, method = RequestMethod.GET)
     public String currentBook() {
-
 
         return "booksListPg";
     }
@@ -84,11 +81,16 @@ public class BookController {
         return "booksList";
     }
 
+    @RequestMapping(value = {"/superEntity"} , method = RequestMethod.GET)
+    public String getSuperEntities(Model model){
+
+        model.addAttribute("history", bookService.getSuperEntitys());
+
+        return "joinView";
+    }
+
     @RequestMapping(value = {"/booksListPg"}, method = RequestMethod.GET)
-    public String pageableBooksList(
-            @RequestParam(value = "task", defaultValue = ("id")) String task,
-            Model model,
-            @PageableDefault(sort = {"id"},direction = Sort.Direction.DESC)Pageable pageable) {
+    public String pageableBooksList(@RequestParam(value = "task", defaultValue = ("id")) String task, Model model, @PageableDefault(sort = {"id"},direction = Sort.Direction.DESC)Pageable pageable) {
 
         Page<Books> booksPage = null;
 
@@ -111,6 +113,7 @@ public class BookController {
         model.addAttribute("books", booksPage); //bookPage
         return "booksListPg";
     }
+
 
 
 
