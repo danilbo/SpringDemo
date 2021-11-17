@@ -16,12 +16,6 @@ public class History {
     private Reader reader;
 
 
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public Books getBooks() {
         return books;
@@ -38,8 +32,7 @@ public class History {
     @Override
     public String toString() {
         return "History{" +
-                "id=" + id +
-                ", books=" + books +
+                "books=" + books +
                 ", reader=" + reader +
                 '}';
     }

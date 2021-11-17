@@ -84,9 +84,19 @@ public class BookController {
     @RequestMapping(value = {"/superEntity"} , method = RequestMethod.GET)
     public String getSuperEntities(Model model){
 
-        model.addAttribute("history", bookService.getSuperEntitys());
+        model.addAttribute("history", bookService.getSuperEntities());
 
         return "joinView";
+    }
+    @RequestMapping(value = {"/testAs"} , method = RequestMethod.GET)
+    public String getReaders(Model model){
+
+        List<Books> booksArray = bookService.sortedByID();
+
+
+        model.addAttribute("books", booksArray);
+
+        return "testAs";
     }
 
     @RequestMapping(value = {"/booksListPg"}, method = RequestMethod.GET)

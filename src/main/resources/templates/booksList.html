@@ -17,6 +17,7 @@
             <th><a href="http://localhost:8080/base/booksList?task=author"> Author </a></th>
             <th><a href="http://localhost:8080/base/booksList?task=title"> Title </a></th>
         </tr>
+
         <tr th:each ="books : ${books}">
             <td th:utext="${books.id}">...</td>
             <td th:utext="${books.author}">...</td>

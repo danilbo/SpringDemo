@@ -68,7 +68,7 @@ public class Reader {
     @Override
     public String toString() {
         //return "Reader{id + "+getId()+" name " + getFirst_name()+ " surname " + getSecond_name() + "}";
-        return "{"+ getFirst_name()+ " " + getSecond_name() + " current book " + getCurrentBook()+"}";
+        return "{"+ getFirst_name()+ " " + getSecond_name() +"}";
     }
 }
 

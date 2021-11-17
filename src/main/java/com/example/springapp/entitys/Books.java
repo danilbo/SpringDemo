@@ -1,6 +1,8 @@
 package com.example.springapp.entitys;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Entity
@@ -18,8 +20,9 @@ public class Books {
     @JoinColumn(name = "id")
     private Reader reader;
     @OneToMany(targetEntity = History.class, cascade = CascadeType.ALL)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "books_id")
     private List<History> histories;
+
 
     public void setAuthor(String author) {
         this.author = author;
@@ -42,6 +45,15 @@ public class Books {
     }
 
     public Books() {
+    }
+
+    public List<String> test(){
+        List<String> s = new ArrayList<>();
+        s.add("a");
+        s.add("b");
+        s.add("c");
+        s.add("d");
+        return s;
     }
 
     public Books(String author, String title) {

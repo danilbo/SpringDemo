@@ -91,7 +91,8 @@ public class BookService {
             repository.save(newBook);
             return "redirect:/base/booksList";
     }
-    public List<History> getSuperEntitys(){return historyRepository.findAll();}
+    public List<History> getSuperEntities(){return historyRepository.findAll();}
+
 
     public List<Books> sortedByID() {
         return repository.findByOrderByIdAsc();

@@ -1,10 +1,31 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+  <meta charset="UTF-8" />
+  <title>Readers info</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}"/>
 </head>
 <body>
+<h1>Readers info</h1>
 
+<div>
+  <table border="1">
+    <tr>
+      <th> Book ID </th>
+      <th> Author </th>
+      <th> Title </th>
+      <th> Readers </th>
+    </tr>
+    <tr th:each ="books : ${books}">
+      <td th:utext="${books.id}">...</td>
+      <td th:utext="${books.author}">...</td>
+      <td th:utext="${books.title}">...</td>
+        <span th:each="h : ${books.getHistories()}">
+      <td th:text="${h}">...</td>
+        </span>
+    </tr>
+  </table>
+</div>
 </body>
 </html>
