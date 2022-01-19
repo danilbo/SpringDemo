@@ -6,4 +6,4 @@ User may get different request via this project to DataBase(by params like ...?a
 There is criteria builder in this project, it's helps to build custom search into database (by different fields)
 Also created different views for different tasks
 
-This is my training project, so it have bad code formatting
+!This is my training project!
